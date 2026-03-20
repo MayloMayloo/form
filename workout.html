@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build Muscle — 6-Day Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:     #0E0E0C;
+  --paper:   #F4F1EB;
+  --surface: #EDEAE2;
+  --border:  rgba(14,14,12,0.12);
+  --dim:     #9A9488;
+  --push:    #C94B25;
+  --pull:    #1A6480;
+  --legs:    #2B7A54;
+  --serif:   'DM Serif Display', Georgia, serif;
+  --display: 'Bebas Neue', sans-serif;
+  --mono:    'DM Mono', monospace;
+  --t:       0.2s ease;
+}
+[data-theme="dark"] {
+  --ink:     #F0EDE6;
+  --paper:   #131210;
+  --surface: #1C1A17;
+  --border:  rgba(240,237,230,0.1);
+  --dim:     #6A6660;
+  --push:    #D9623C;
+  --pull:    #3A8BAA;
+  --legs:    #3C9468;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.6;
+  transition: background var(--t), color var(--t);
+}
+
+/* TOPBAR */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 40px; height: 52px;
+  background: var(--paper); border-bottom: 1px solid var(--border);
+  transition: background var(--t);
+}
+.logo { font-family: var(--display); font-size: 16px; letter-spacing: 4px; }
+.topbar-right { display: flex; align-items: center; gap: 24px; }
+.topbar-label { font-size: 10px; letter-spacing: 2px; color: var(--dim); }
+.theme-btn {
+  width: 36px; height: 20px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  cursor: pointer; position: relative;
+  transition: background var(--t), border-color var(--t);
+  flex-shrink: 0;
+}
+.theme-btn::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--dim); transition: transform 0.25s ease, background var(--t);
+}
+[data-theme="dark"] .theme-btn::after { transform: translateX(16px); background: var(--ink); }
+
+/* HERO */
+.hero {
+  margin-top: 52px;
+  padding: 80px 40px 64px;
+  border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: end;
+}
+.hero-eyebrow {
+  font-size: 10px; letter-spacing: 3px; color: var(--dim); margin-bottom: 20px;
+  opacity: 0; animation: up 0.7s ease 0.1s forwards;
+}
+.hero-title {
+  font-family: var(--serif); font-size: clamp(56px, 8vw, 96px);
+  line-height: 0.95; letter-spacing: -1px;
+  opacity: 0; animation: up 0.7s ease 0.2s forwards;
+}
+.hero-title em { font-style: italic; color: var(--dim); }
+.hero-right { opacity: 0; animation: up 0.7s ease 0.35s forwards; }
+.hero-desc { font-size: 12.5px; color: var(--dim); line-height: 1.9; margin-bottom: 36px; max-width: 320px; }
+.stats-row { display: flex; gap: 32px; padding-top: 28px; border-top: 1px solid var(--border); }
+.stat { display: flex; flex-direction: column; gap: 3px; }
+.stat-n { font-family: var(--display); font-size: 32px; line-height: 1; letter-spacing: 1px; }
+.stat-l { font-size: 9px; letter-spacing: 2px; color: var(--dim); text-transform: uppercase; }
+
+/* WEEK STRIP */
+.week-strip {
+  display: flex; border-bottom: 1px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+  position: sticky; top: 52px; z-index: 100;
+  background: var(--paper); transition: background var(--t);
+}
+.week-strip::-webkit-scrollbar { display: none; }
+.day-btn {
+  flex: 1; min-width: 0; padding: 14px 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  background: none; border: none; border-right: 1px solid var(--border);
+  cursor: pointer; transition: background var(--t);
+}
+.day-btn:last-child { border-right: none; }
+.day-btn:hover { background: var(--surface); }
+.day-btn-label { font-family: var(--display); font-size: 12px; letter-spacing: 2px; color: var(--dim); transition: color var(--t); }
+.day-btn-sub { font-size: 9px; letter-spacing: 1px; color: var(--dim); opacity: 0.6; }
+.dot { width: 6px; height: 6px; border-radius: 50%; opacity: 0.3; transition: opacity 0.2s; }
+.dot.push { background: var(--push); }
+.dot.pull { background: var(--pull); }
+.dot.legs { background: var(--legs); }
+.dot.rest { background: var(--dim); }
+.day-btn.active .dot { opacity: 1; }
+.day-btn.active .day-btn-label { color: var(--ink); }
+
+/* DAY PANEL */
+.day-panel { display: none; }
+.day-panel.active { display: block; }
+.day-head {
+  padding: 48px 40px 36px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+}
+.day-kicker { font-size: 10px; letter-spacing: 3px; color: var(--dim); margin-bottom: 10px; }
+.day-title { font-family: var(--serif); font-size: clamp(42px, 6vw, 72px); line-height: 1; letter-spacing: -0.5px; }
+.day-title.push { color: var(--push); }
+.day-title.pull { color: var(--pull); }
+.day-title.legs { color: var(--legs); }
+.day-title.rest { color: var(--dim); }
+.day-focus { text-align: right; font-size: 11px; letter-spacing: 1.5px; color: var(--dim); line-height: 2.1; text-transform: uppercase; flex-shrink: 0; }
+
+/* EXERCISE ROWS — standard 4-col */
+.ex-head {
+  display: grid; grid-template-columns: 2fr 56px 80px 56px;
+  padding: 10px 40px; border-bottom: 1px solid var(--border);
+}
+.ex-head span { font-size: 9px; letter-spacing: 2px; color: var(--dim); text-align: center; }
+.ex-head span:first-child { text-align: left; }
+
+.ex-item { border-bottom: 1px solid var(--border); cursor: pointer; }
+.ex-item:hover .ex-row { background: var(--surface); }
+
+.ex-row {
+  display: grid; grid-template-columns: 2fr 56px 80px 56px;
+  padding: 0 40px; transition: background var(--t);
+}
+
+.ex-cell-name {
+  padding: 20px 0; display: flex; align-items: center; gap: 16px;
+}
+.ex-idx { font-family: var(--display); font-size: 18px; color: var(--dim); opacity: 0.4; line-height: 1; min-width: 28px; flex-shrink: 0; }
+.ex-name { font-family: var(--serif); font-size: 18px; line-height: 1.1; margin-bottom: 3px; }
+.ex-muscles { font-size: 10px; letter-spacing: 1px; color: var(--dim); }
+.ex-cell-stat { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 20px 0; }
+.ex-val { font-family: var(--display); font-size: 20px; line-height: 1; letter-spacing: 0.5px; }
+.ex-unit { font-size: 8.5px; letter-spacing: 1.5px; color: var(--dim); }
+
+.ex-tip {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0 40px 0 84px;
+}
+.ex-item.open .ex-tip {
+  max-height: 100px;
+  padding: 0 40px 18px 84px;
+}
+.ex-tip-inner {
+  font-size: 11.5px; color: var(--dim); line-height: 1.8;
+  border-left: 2px solid var(--border); padding-left: 16px;
+}
+
+/* EXERCISE ROWS — abs 3-col */
+.ex-head-abs {
+  display: grid; grid-template-columns: 2fr 60px 100px;
+  padding: 10px 40px; border-bottom: 1px solid var(--border);
+}
+.ex-head-abs span { font-size: 9px; letter-spacing: 2px; color: var(--dim); text-align: center; }
+.ex-head-abs span:first-child { text-align: left; }
+
+.ex-row-abs { display: grid; grid-template-columns: 2fr 60px 100px; padding: 0 40px; transition: background var(--t); }
+.ex-item:hover .ex-row-abs { background: var(--surface); }
+.ex-tip-abs {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0 40px 0 84px;
+}
+.ex-item.open .ex-tip-abs { max-height: 100px; padding: 0 40px 18px 84px; }
+
+/* REST */
+.rest-body { padding: 80px 40px; max-width: 480px; }
+.rest-body p { font-size: 13px; color: var(--dim); line-height: 1.9; margin-bottom: 12px; }
+
+/* SUN TOGGLE */
+.sun-toggle { display: flex; border-bottom: 1px solid var(--border); }
+.sun-toggle-btn {
+  flex: 1; padding: 16px 24px;
+  font-family: var(--display); font-size: 13px; letter-spacing: 2px;
+  background: none; color: var(--dim);
+  border: none; border-right: 1px solid var(--border);
+  cursor: pointer; transition: background var(--t), color var(--t);
+}
+.sun-toggle-btn:last-child { border-right: none; }
+.sun-toggle-btn.active { background: var(--ink); color: var(--paper); }
+
+/* GUIDE */
+.guide-body { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border); }
+.guide-block { padding: 52px 40px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.guide-block:nth-child(even) { border-right: none; }
+.guide-kicker { font-size: 9px; letter-spacing: 3px; color: var(--dim); margin-bottom: 20px; }
+.guide-block h3 { font-family: var(--serif); font-size: 28px; line-height: 1.05; margin-bottom: 20px; }
+.guide-block p, .guide-block li { font-size: 12px; color: var(--dim); line-height: 1.9; }
+.guide-block ul { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.guide-block li::before { content: '— '; opacity: 0.4; }
+.rule-box { margin-top: 20px; padding: 20px 22px; background: var(--surface); border-left: 2px solid var(--push); transition: background var(--t); }
+.rule-box strong { font-family: var(--serif); font-size: 15px; font-weight: 400; display: block; margin-bottom: 8px; color: var(--ink); }
+.rule-box p { font-size: 12px; color: var(--dim); line-height: 1.8; }
+.mistakes-row { grid-column: 1/-1; display: grid; grid-template-columns: repeat(4,1fr); border-right: none; padding: 0; }
+.mistake-item { padding: 40px 36px; border-right: 1px solid var(--border); border-top: 1px solid var(--border); border-bottom: none; }
+.mistake-item:last-child { border-right: none; }
+.mistake-item h4 { font-family: var(--serif); font-size: 20px; margin-bottom: 12px; line-height: 1.1; }
+.mistake-item p { font-size: 11.5px; color: var(--dim); line-height: 1.8; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--border); padding: 20px 40px; display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 1.5px; color: var(--dim); }
+
+/* ANIMATION */
+@keyframes up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+/* RESPONSIVE */
+@media (max-width: 720px) {
+  .topbar { padding: 0 20px; }
+  .topbar-label { display: none; }
+  .hero { grid-template-columns: 1fr; padding: 48px 20px 40px; gap: 28px; }
+  .hero-desc { max-width: 100%; }
+  .stats-row { gap: 20px; flex-wrap: wrap; }
+  .day-head { padding: 32px 20px 24px; }
+  .day-focus { display: none; }
+  .ex-head, .ex-row { grid-template-columns: 1fr 52px 72px 48px; padding: 0 20px; }
+  .ex-head { padding: 10px 20px; }
+  .ex-tip { padding: 0; }
+  .ex-item.open .ex-tip { padding: 0 20px 14px 20px; }
+  .ex-head-abs, .ex-row-abs { grid-template-columns: 1fr 52px 88px; padding: 0 20px; }
+  .ex-head-abs { padding: 10px 20px; }
+  .ex-tip-abs { padding: 0; }
+  .ex-item.open .ex-tip-abs { padding: 0 20px 14px 20px; }
+  .guide-body { grid-template-columns: 1fr; }
+  .guide-block { border-right: none; padding: 36px 20px; }
+  .mistakes-row { grid-template-columns: 1fr 1fr; }
+  .mistake-item:nth-child(2) { border-right: none; }
+  .mistake-item:nth-child(3) { border-right: 1px solid var(--border); }
+  footer { padding: 16px 20px; flex-direction: column; gap: 6px; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="logo">FORM</span>
+  <div class="topbar-right">
+    <span class="topbar-label">6-DAY · PPL × 2 · BEGINNER</span>
+    <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle dark mode"></button>
+  </div>
+</header>
+
+<section class="hero">
+  <div>
+    <p class="hero-eyebrow">HYPERTROPHY PROGRAM</p>
+    <h1 class="hero-title">Build<br><em>Muscle.</em><br>Fast.</h1>
+  </div>
+  <div class="hero-right">
+    <p class="hero-desc">Push / Pull / Legs, twice a week. Adjustable dumbbells, a bench, and a pull-up bar. Every muscle trained twice. Every session under 60 minutes.</p>
+    <div class="stats-row">
+      <div class="stat"><span class="stat-n">6</span><span class="stat-l">Days / Week</span></div>
+      <div class="stat"><span class="stat-n">60</span><span class="stat-l">Min / Session</span></div>
+      <div class="stat"><span class="stat-n">2×</span><span class="stat-l">Each Muscle</span></div>
+      <div class="stat"><span class="stat-n">30</span><span class="stat-l">Exercises</span></div>
+    </div>
+  </div>
+</section>
+
+<nav class="week-strip">
+  <button class="day-btn active" data-day="mon" onclick="show('mon',this)">
+    <span class="dot push"></span><span class="day-btn-label">MON</span><span class="day-btn-sub">Push A</span>
+  </button>
+  <button class="day-btn" data-day="tue" onclick="show('tue',this)">
+    <span class="dot pull"></span><span class="day-btn-label">TUE</span><span class="day-btn-sub">Pull A</span>
+  </button>
+  <button class="day-btn" data-day="wed" onclick="show('wed',this)">
+    <span class="dot legs"></span><span class="day-btn-label">WED</span><span class="day-btn-sub">Legs A</span>
+  </button>
+  <button class="day-btn" data-day="thu" onclick="show('thu',this)">
+    <span class="dot push"></span><span class="day-btn-label">THU</span><span class="day-btn-sub">Push B</span>
+  </button>
+  <button class="day-btn" data-day="fri" onclick="show('fri',this)">
+    <span class="dot pull"></span><span class="day-btn-label">FRI</span><span class="day-btn-sub">Pull B</span>
+  </button>
+  <button class="day-btn" data-day="sat" onclick="show('sat',this)">
+    <span class="dot legs"></span><span class="day-btn-label">SAT</span><span class="day-btn-sub">Legs B</span>
+  </button>
+  <button class="day-btn" data-day="sun" onclick="show('sun',this)">
+    <span class="dot rest"></span><span class="day-btn-label">SUN</span><span class="day-btn-sub">Rest / Abs</span>
+  </button>
+  <button class="day-btn" data-day="guide" onclick="show('guide',this)" style="border-left:1px solid var(--border)">
+    <span class="dot rest"></span><span class="day-btn-label">GUIDE</span><span class="day-btn-sub">Reference</span>
+  </button>
+</nav>
+
+<main>
+
+  <!-- MON -->
+  <div id="panel-mon" class="day-panel active">
+    <div class="day-head">
+      <div><p class="day-kicker">MONDAY — 01 OF 06</p><h2 class="day-title push">Push A</h2></div>
+      <div class="day-focus">Chest<br>Shoulders<br>Triceps</div>
+    </div>
+    <div class="ex-head"><span>Exercise</span><span>Sets</span><span>Reps</span><span>Rest</span></div>
+    <div id="ex-mon"></div>
+  </div>
+
+  <!-- TUE -->
+  <div id="panel-tue" class="day-panel">
+    <div class="day-head">
+      <div><p class="day-kicker">TUESDAY — 02 OF 06</p><h2 class="day-title pull">Pull A</h2></div>
+      <div class="day-focus">Back<br>Biceps<br>Rear Delts</div>
+    </div>
+    <div class="ex-head"><span>Exercise</span><span>Sets</span><span>Reps</span><span>Rest</span></div>
+    <div id="ex-tue"></div>
+  </div>
+
+  <!-- WED -->
+  <div id="panel-wed" class="day-panel">
+    <div class="day-head">
+      <div><p class="day-kicker">WEDNESDAY — 03 OF 06</p><h2 class="day-title legs">Legs A</h2></div>
+      <div class="day-focus">Quads<br>Hamstrings<br>Glutes · Calves</div>
+    </div>
+    <div class="ex-head"><span>Exercise</span><span>Sets</span><span>Reps</span><span>Rest</span></div>
+    <div id="ex-wed"></div>
+  </div>
+
+  <!-- THU -->
+  <div id="panel-thu" class="day-panel">
+    <div class="day-head">
+      <div><p class="day-kicker">THURSDAY — 04 OF 06</p><h2 class="day-title push">Push B</h2></div>
+      <div class="day-focus">Chest<br>Shoulders<br>Triceps</div>
+    </div>
+    <div class="ex-head"><span>Exercise</span><span>Sets</span><span>Reps</span><span>Rest</span></div>
+    <div id="ex-thu"></div>
+  </div>
+
+  <!-- FRI -->
+  <div id="panel-fri" class="day-panel">
+    <div class="day-head">
+      <div><p class="day-kicker">FRIDAY — 05 OF 06</p><h2 class="day-title pull">Pull B</h2></div>
+      <div class="day-focus">Back<br>Biceps<br>Rear Delts</div>
+    </div>
+    <div class="ex-head"><span>Exercise</span><span>Sets</span><span>Reps</span><span>Rest</span></div>
+    <div id="ex-fri"></div>
+  </div>
+
+  <!-- SAT -->
+  <div id="panel-sat" class="day-panel">
+    <div class="day-head">
+      <div><p class="day-kicker">SATURDAY — 06 OF 06</p><h2 class="day-title legs">Legs B</h2></div>
+      <div class="day-focus">Quads<br>Hamstrings<br>Glutes · Calves</div>
+    </div>
+    <div class="ex-head"><span>Exercise</span><span>Sets</span><span>Reps</span><span>Rest</span></div>
+    <div id="ex-sat"></div>
+  </div>
+
+  <!-- SUN -->
+  <div id="panel-sun" class="day-panel">
+    <div class="day-head">
+      <div><p class="day-kicker">SUNDAY</p><h2 class="day-title rest">Rest — or Abs.</h2></div>
+      <div class="day-focus">Your<br>choice</div>
+    </div>
+    <div class="sun-toggle">
+      <button class="sun-toggle-btn active" id="sun-btn-rest" onclick="sunToggle('rest')">REST</button>
+      <button class="sun-toggle-btn"        id="sun-btn-abs"  onclick="sunToggle('abs')">ABS SESSION</button>
+    </div>
+
+    <div id="sun-rest">
+      <div class="rest-body">
+        <p>Muscle grows during recovery, not during training.</p>
+        <p>Sleep 7–9 hours. Eat your protein. Light walking is fine. Come back Monday stronger.</p>
+        <p style="margin-top:20px;font-size:11px;opacity:0.55">Or flip to the Abs tab above for a 20–30 min active recovery session.</p>
+      </div>
+    </div>
+
+    <div id="sun-abs" style="display:none">
+      <div style="padding:32px 40px 20px;border-bottom:1px solid var(--border)">
+        <p style="font-size:10px;letter-spacing:3px;color:var(--dim);margin-bottom:10px">20–30 MIN · ACTIVE RECOVERY · 3 ROUNDS</p>
+        <p style="font-size:12px;color:var(--dim);line-height:1.9;max-width:520px">Abs recover fast — this won't affect Monday's Push session. A strong core carries over to every compound lift. Take 90s rest between rounds.</p>
+      </div>
+      <div style="padding:12px 40px;border-bottom:1px solid var(--border);background:var(--surface)">
+        <p style="font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:3px">WARM-UP · 2 MIN</p>
+        <p style="font-size:12px;color:var(--dim)">Cat-cow × 10 &nbsp;·&nbsp; Hip circles × 10 each way &nbsp;·&nbsp; Easy dead bug × 5 per side</p>
+      </div>
+      <div class="ex-head-abs"><span>Exercise</span><span>Sets</span><span>Reps / Time</span></div>
+      <div id="ex-abs"></div>
+    </div>
+  </div>
+
+  <!-- GUIDE -->
+  <div id="panel-guide" class="day-panel">
+    <div class="day-head">
+      <div><p class="day-kicker">REFERENCE</p><h2 class="day-title" style="color:var(--ink)">The Guide</h2></div>
+      <div class="day-focus">Progression<br>Nutrition<br>Recovery</div>
+    </div>
+    <div class="guide-body">
+
+      <div class="guide-block">
+        <p class="guide-kicker">01 — PROGRESSION</p>
+        <h3>The only rule<br>that matters.</h3>
+        <div class="rule-box">
+          <strong>The Double Progression Rule</strong>
+          <p>Once you hit the top of your rep range on all sets, add 2–5 kg next session. Drop to the bottom of the range. Repeat forever. This is the entire mechanism of muscle growth.</p>
+        </div>
+        <p style="margin-top:14px">Track every set. Weight + reps. Every session. No exceptions.</p>
+      </div>
+
+      <div class="guide-block">
+        <p class="guide-kicker">02 — EFFORT</p>
+        <h3>How hard<br>to push.</h3>
+        <ul>
+          <li>RPE 7 — 3 reps left in tank (minimum)</li>
+          <li>RPE 8 — 2 reps left <em style="font-family:var(--serif);font-size:13px">(target)</em></li>
+          <li>RPE 9 — 1 rep left (occasionally fine)</li>
+          <li>RPE 10 — absolute failure (avoid)</li>
+        </ul>
+        <p style="margin-top:14px">Stop 1–3 reps short of failure every set. Keeps form tight and manages fatigue.</p>
+      </div>
+
+      <div class="guide-block">
+        <p class="guide-kicker">03 — NUTRITION</p>
+        <h3>Fuel the<br>work.</h3>
+        <ul>
+          <li>Protein: bodyweight (kg) × 1.8–2 g / day</li>
+          <li>75 kg person = ~140 g protein daily</li>
+          <li>Eat enough — no big deficit while building</li>
+          <li>Protein source with every meal</li>
+          <li>Eat within 2 hrs after training</li>
+        </ul>
+        <p style="margin-top:14px">Sources: chicken, eggs, Greek yogurt, cottage cheese, fish.</p>
+      </div>
+
+      <div class="guide-block">
+        <p class="guide-kicker">04 — RECOVERY</p>
+        <h3>Where growth<br>actually happens.</h3>
+        <ul>
+          <li>Sleep 7–9 hrs — non-negotiable</li>
+          <li>90% of muscle synthesis happens during deep sleep</li>
+          <li>Drink 2–3 litres of water daily</li>
+          <li>Chronic stress directly inhibits muscle growth</li>
+          <li>Sunday is a real rest day — no heavy cardio</li>
+        </ul>
+      </div>
+
+      <div class="mistakes-row">
+        <div class="mistake-item">
+          <h4>Too heavy<br>too soon</h4>
+          <p>Form breaks down, injuries follow. Use a weight you can control for every rep. Ego is the enemy.</p>
+        </div>
+        <div class="mistake-item">
+          <h4>Skipping<br>leg day</h4>
+          <p>Legs are half your body. Squats and RDLs also trigger whole-body anabolic hormones. Never skip.</p>
+        </div>
+        <div class="mistake-item">
+          <h4>Not sleeping<br>enough</h4>
+          <p>Sleep is the most powerful muscle-building tool you have — and it's free. 7 hours is the floor.</p>
+        </div>
+        <div class="mistake-item">
+          <h4>Changing<br>programs</h4>
+          <p>Stick with this for 12 weeks minimum. Consistency beats optimization every time for beginners.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>FORM — Hypertrophy Program</span>
+  <span>Beginner · PPL × 2 · 2026</span>
+</footer>
+
+<script>
+const WORKOUTS = {
+  mon: [
+    ["Flat Dumbbell Press",          "Chest · Front Delts · Triceps",  "3","8–12",  "90s","3 seconds down, squeeze at the top. Elbows no wider than 75°. Stop 1–2 reps short of failure every set."],
+    ["Incline Dumbbell Press",       "Upper Chest · Front Delts",      "3","10–12", "90s","Set bench to 30–45°. Focus on feeling the upper chest stretch at the bottom of each rep."],
+    ["Dumbbell Lateral Raise",       "Side Delts",                     "3","12–15", "60s","Light weight, zero swing. Slow controlled raise to shoulder height. Builds shoulder width faster than anything."],
+    ["Overhead Dumbbell Press",      "Shoulders · Triceps",            "3","10–12", "90s","Core tight, press straight up. Don't excessively arch the lower back."],
+    ["DB Overhead Tricep Extension", "Triceps — Long Head",            "3","12–15", "60s","Lower slowly behind your head. Feel the long-head stretch. This is what adds size to the back of your arms."],
+  ],
+  tue: [
+    ["Pull-ups / Negatives",         "Lats · Biceps · Upper Back",     "3","Max",   "2min","Can't do 5? Jump up, lower in 6 seconds. Build to full reps over weeks."],
+    ["DB Bent-Over Row",             "Lats · Mid Back · Biceps",       "3","10–12", "90s","Hinge at hips, back flat. Pull elbow toward hip — not hand to chest. Squeeze 1s at top."],
+    ["Chest-Supported DB Row",       "Mid Back · Rhomboids",           "3","12–15", "60s","Face-down on incline bench. Removes all lower-back stress so you can focus purely on the back."],
+    ["DB Face Pull (Seated)",        "Rear Delts · Rotator Cuff",      "3","15–20", "60s","Go very light. Pull elbows high and wide to ear level. Critical for long-term shoulder health."],
+    ["Dumbbell Curl",                "Biceps · Brachialis",            "3","10–12", "60s","Full range of motion. Supinate at the top. Absolutely no swinging."],
+  ],
+  wed: [
+    ["DB Goblet Squat",              "Quads · Glutes · Core",          "4","10–12", "90s","Hold DB at chest, squat deep, chest tall. Pause 1 second at the bottom of every rep."],
+    ["DB Romanian Deadlift",         "Hamstrings · Glutes",            "3","10–12", "90s","Hinge at hips, back flat. DBs slide down your legs. Feel the hamstring stretch."],
+    ["DB Reverse Lunge",             "Quads · Glutes · Balance",       "3","10–12ea","90s","Step backward — easier on knees. Drive through the front heel to stand."],
+    ["Bulgarian Split Squat",        "Quads · Glutes",                 "3","8–10ea", "90s","Rear foot on bench. Light weight first — this will humble you. Best single-leg exercise available."],
+    ["Standing Calf Raise (DB)",     "Calves",                         "4","15–20", "45s","Raise as high as possible, pause 1s at top, lower all the way down. Use a step edge if possible."],
+  ],
+  thu: [
+    ["DB Floor Press",               "Chest · Triceps",                "3","10–12", "90s","On the floor — elbows briefly touch. Different stimulus from bench, less shoulder stress."],
+    ["DB Chest Fly (Flat)",          "Chest — Stretch Focus",          "3","12–15", "60s","Light weight. Wide arc. Deep chest stretch. Focus entirely on feeling the muscle, not the load."],
+    ["Arnold Press",                 "All 3 Delt Heads",               "3","10–12", "90s","Start with palms facing you, rotate outward as you press. Hits all three deltoid heads."],
+    ["Dumbbell Lateral Raise",       "Side Delts",                     "3","12–15", "60s","Same as Push A. Side delts need twice-weekly frequency to grow. Slow and controlled every rep."],
+    ["Close-Grip Push-up",           "Triceps · Chest",                "3","Max",   "60s","Hands shoulder-width, elbows tucked to sides. Lower chest all the way to the floor."],
+  ],
+  fri: [
+    ["Chin-ups",                     "Lats · Biceps — Heavy",          "3","Max",    "2min","Underhand grip. More bicep involvement than pull-ups. Full dead-hang to chin over bar."],
+    ["Single-Arm DB Row",            "Lats · Mid Back",                "3","10–12ea","60s","Support on bench, row from full stretch to hip. You can go heavy here."],
+    ["Incline Bench DB Curl",        "Biceps — Long Head Peak",        "3","10–12",  "60s","Arms hang behind the incline for maximum stretch. Go lighter than normal."],
+    ["Hammer Curl",                  "Brachialis · Forearms",          "3","10–12",  "60s","Neutral grip (thumbs up). Builds the brachialis — pushes the bicep peak visually higher."],
+    ["Dumbbell Shrug",               "Upper Traps",                    "3","12–15",  "60s","Heavy DBs, straight up to your ears. Pause 1–2s at the top. No rolling — ever."],
+  ],
+  sat: [
+    ["DB Sumo Squat",                "Glutes · Inner Quads",           "4","12–15",  "90s","Wide stance, toes 45° out, squat deep. More glute and inner thigh than goblet squat."],
+    ["Single-Leg RDL (DB)",          "Hamstrings · Glutes · Balance",  "3","8–10ea", "90s","Stand on one leg, hinge forward. Hold something lightly for balance at first."],
+    ["Dumbbell Step-up",             "Quads · Glutes",                 "3","10–12ea","90s","Step onto bench, drive through the heel. Don't push off the back foot."],
+    ["Lying Hamstring Curl (DB)",    "Hamstrings",                     "3","12–15",  "60s","DB clamped between feet, face-down on bench. Go light until you have the movement."],
+    ["Standing Calf Raise (DB)",     "Calves",                         "4","15–20",  "45s","Same as Legs A. Full range every rep — lower all the way down for maximum stretch."],
+  ],
+};
+
+const ABS = [
+  ["Dead Bug",               "Biceps · Brachialis",  "3","10 / side","Lower back pressed to floor the whole time. 3s out, 3s back. Slow and deliberate."],
+  ["Hollow Body Hold",       "Full Core",            "3","30s",      "Arms overhead, lower back flat, legs straight out low. The foundation of all core work."],
+  ["Ab Wheel Rollout",       "Core — Anti-Extension","3","8–10 reps","A dumbbell works as a substitute. Roll from your knees first. Go only as far as your lower back stays flat."],
+  ["Reverse Crunch",         "Lower Abs",            "3","15 reps",  "Hips curl up toward the ceiling — not a swing. Control the lower back on the way down."],
+  ["Side Plank",             "Obliques",             "3","30s / side","Hips up, body in a straight line. Don't let the hip sag. Both sides."],
+];
+
+function buildRows(container, data, isAbs) {
+  data.forEach(([name, muscles, sets, reps, rest, tip], i) => {
+    const item = document.createElement('div');
+    item.className = 'ex-item';
+
+    const row = document.createElement('div');
+    row.className = isAbs ? 'ex-row-abs' : 'ex-row';
+
+    const val1 = isAbs ? reps : rest;
+    const unit1 = isAbs ? '' : 'rest';
+
+    row.innerHTML = `
+      <div class="ex-cell-name">
+        <span class="ex-idx">${String(i+1).padStart(2,'0')}</span>
+        <div>
+          <div class="ex-name">${name}</div>
+          ${!isAbs ? `<div class="ex-muscles">${muscles}</div>` : ''}
+        </div>
+      </div>
+      <div class="ex-cell-stat">
+        <span class="ex-val">${sets}</span>
+        <span class="ex-unit">sets</span>
+      </div>
+      <div class="ex-cell-stat">
+        <span class="ex-val" style="font-size:${isAbs ? '14px' : '20px'}">${isAbs ? reps : reps}</span>
+        ${!isAbs ? '<span class="ex-unit">reps</span>' : ''}
+      </div>
+      ${!isAbs ? `<div class="ex-cell-stat"><span class="ex-val">${rest}</span><span class="ex-unit">rest</span></div>` : ''}
+    `;
+
+    const tipEl = document.createElement('div');
+    tipEl.className = isAbs ? 'ex-tip-abs' : 'ex-tip';
+    tipEl.innerHTML = `<div class="ex-tip-inner">${tip}</div>`;
+
+    item.appendChild(row);
+    item.appendChild(tipEl);
+
+    item.addEventListener('click', () => {
+      const isOpen = item.classList.contains('open');
+      container.querySelectorAll('.ex-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+
+    container.appendChild(item);
+  });
+}
+
+// Build all workout days
+Object.keys(WORKOUTS).forEach(id => {
+  buildRows(document.getElementById('ex-' + id), WORKOUTS[id], false);
+});
+
+// Build abs
+buildRows(document.getElementById('ex-abs'), ABS, true);
+
+function show(day, btn) {
+  document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + day).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: document.querySelector('.week-strip').offsetTop - 52, behavior: 'smooth' });
+}
+
+function sunToggle(which) {
+  const restBtn = document.getElementById('sun-btn-rest');
+  const absBtn  = document.getElementById('sun-btn-abs');
+  const restDiv = document.getElementById('sun-rest');
+  const absDiv  = document.getElementById('sun-abs');
+  if (which === 'abs') {
+    restDiv.style.display = 'none';
+    absDiv.style.display  = 'block';
+    absBtn.classList.add('active');
+    restBtn.classList.remove('active');
+  } else {
+    absDiv.style.display  = 'none';
+    restDiv.style.display = 'block';
+    restBtn.classList.add('active');
+    absBtn.classList.remove('active');
+  }
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+</script>
+</body>
+</html>
